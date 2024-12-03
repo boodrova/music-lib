@@ -1,0 +1,158 @@
+definitions:
+  api.AddSongRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    type: object
+  db.Song:
+    properties:
+      groupName:
+        type: string
+      id:
+        type: integer
+      link:
+        type: string
+      releaseDate:
+        type: string
+      songName:
+        type: string
+      text:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /songs:
+    get:
+      consumes:
+      - application/json
+      description: Fetches a list of songs filtered by group and song name, with pagination
+        support
+      parameters:
+      - description: Filter by group name
+        in: query
+        name: group
+        type: string
+      - description: Filter by song name
+        in: query
+        name: song
+        type: string
+      - description: 'Maximum number of songs to return (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Number of songs to skip (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of songs
+          schema:
+            items:
+              $ref: '#/definitions/db.Song'
+            type: array
+        "500":
+          description: Failed to fetch songs
+          schema:
+            type: string
+      summary: Get songs
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Adds a new song with details fetched from external API
+      parameters:
+      - description: Song details
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/api.AddSongRequest'
+      produces:
+      - text/plain
+      responses:
+        "201":
+          description: Song added successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Failed to fetch song details or save to DB
+          schema:
+            type: string
+      summary: Add a new song
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a song by its ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Song deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid song ID
+          schema:
+            type: string
+        "500":
+          description: Failed to delete song
+          schema:
+            type: string
+      summary: Delete a song
+      tags:
+      - songs
+    put:
+      consumes:
+      - application/json
+      description: Updates details of a song by its ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated song details
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/db.Song'
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Song updated successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid song ID or request body
+          schema:
+            type: string
+        "500":
+          description: Failed to update song
+          schema:
+            type: string
+      summary: Update a song
+      tags:
+      - songs
+swagger: "2.0"
